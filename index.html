@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Will You Be My Valentine?</title>
+  <style>
+    /* General Styles */
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Dancing Script', cursive;
+      background: url('both.jpeg') no-repeat center top fixed;
+      background-size: cover;
+      color: #fff;
+      text-align: center;
+      position: fixed;  /* Prevent background shaking */
+      width: 100%;
+    }
+
+    /* Mobile Responsive Styles */
+    @media screen and (max-width: 768px) {
+      body {
+        background-position: center center;
+        position: fixed;                 /* Maintain fixed position on mobile */
+        width: 100%;
+        height: 100%;
+      }
+
+      .container {
+        width: 90%;
+        padding: 20px;
+        margin-top: 10%;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+      }
+
+      p {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+      }
+
+      .button-container {
+        min-height: 100px; /* More space for moving button on mobile */
+      }
+
+      button {
+        font-size: 1.5rem;
+        padding: 10px 20px;
+      }
+
+      .solo-image {
+        width: 150px;  /* Smaller image for mobile */
+        height: 150px;
+      }
+
+      .music-selector-container {
+        bottom: 10px;
+        right: 10px;
+      }
+
+      .music-icon {
+        font-size: 20px;
+        padding: 8px;
+      }
+
+      .music-dropdown select {
+        font-size: 14px;
+      }
+
+      .celebration {
+        font-size: 2rem;
+      }
+
+      .heart {
+        font-size: 30px;
+      }
+    }
+
+    /* Additional mobile touch optimization */
+    @media (hover: none) {
+      .no-button {
+        touch-action: none; /* Prevent default touch actions */
+      }
+
+      button:hover {
+        transform: none; /* Remove hover effects on touch devices */
+      }
+    }
+
+    /* Enhanced Heart Animation */
+    @keyframes float {
+      0% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(180deg); }
+      100% { transform: translateY(0) rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    .heart {
+      position: absolute;
+      color: #ff4d4d;
+      font-size: 40px;
+      animation: float 3s infinite;
+      opacity: 0.9;
+      text-shadow: 0 0 15px rgba(255, 77, 77, 0.8);
+      z-index: 1000;
+    }
+
+    /* Enhanced Container */
+    .container {
+      position: relative;
+      z-index: 1;
+      padding-top: 15%;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 20px;
+      width: 80%;
+      margin: 0 auto;
+      padding: 40px;
+      transform: none !important;        /* Prevent container from inheriting transforms */
+    }
+
+    h1 {
+      font-size: 4.5rem;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      animation: pulse 2s infinite;
+      color: #ff6b6b;
+    }
+
+    p {
+      font-size: 2.2rem;
+      margin-bottom: 30px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Enhanced Button */
+    button {
+      padding: 15px 30px;
+      font-size: 1.8rem;
+      background: linear-gradient(45deg, #ff4d4d, #ff8080);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 5px 15px rgba(255, 77, 77, 0.4);
+      font-family: 'Dancing Script', cursive;
+    }
+
+    button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 7px 20px rgba(255, 77, 77, 0.6);
+      background: linear-gradient(45deg, #ff3333, #ff6666);
+    }
+
+    .hidden {
+      display: none;
+      margin-top: 20px;
+      font-size: 2.8rem;
+      color: #ff4d4d;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    /* New Styles */
+    .sparkle {
+      position: absolute;
+      pointer-events: none;
+      background: white;
+      border-radius: 50%;
+    }
+
+    /* Audio Player Styling */
+    audio {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0.8;
+      border-radius: 30px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Enhanced Solo Image Styling with Audio Visualization */
+    .solo-image {
+      width: 200px;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin: 20px auto;
+      display: block;
+      border: 3px solid rgba(255, 255, 255, 0.5);
+      transition: transform 0.05s ease;  /* Faster transition for smoother visualization */
+      transform-origin: center center;   /* Ensure scaling from center */
+      position: relative;                /* Isolate transforms */
+      z-index: 2;                       /* Ensure it's above other elements */
+    }
+
+    .solo-image:hover {
+      transform: scale(1.05);
+    }
+
+    /* Enhanced Button Container */
+    .button-container {
+      position: relative;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 20px;
+      min-height: 60px;  /* Add minimum height to contain moving button */
+    }
+
+    /* Initial position for No button */
+    .no-button {
+      background: linear-gradient(45deg, #ff8080, #ff9999);
+      position: absolute;
+      left: 60%;  /* Position it to the right of Yes button */
+      transform: translateX(-50%);
+    }
+
+    /* Yes button specific styling */
+    .yes-button {
+      position: absolute;
+      left: 40%;  /* Position it to the left */
+      transform: translateX(-50%);
+    }
+
+    /* Celebration Text Animation */
+    @keyframes celebrate {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.5); opacity: 1; }
+      100% { transform: scale(1); opacity: 0; }
+    }
+
+    .celebration {
+      position: absolute;
+      color: #ff4d4d;
+      font-size: 2.5rem;
+      font-weight: bold;
+      pointer-events: none;
+      animation: celebrate 1s forwards;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+    }
+
+    /* Music selector styling */
+    .music-selector-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+
+    .music-icon {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 24px;
+      color: white;
+      transition: all 0.3s ease;
+    }
+
+    .music-icon:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+
+    .music-dropdown {
+      position: absolute;
+      bottom: 100%;
+      right: 0;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 10px;
+      display: none;
+    }
+
+    .music-dropdown.show {
+      display: block;
+    }
+
+    .music-dropdown select {
+      padding: 5px;
+      border-radius: 5px;
+      border: 1px solid #ff4d4d;
+      font-family: 'Dancing Script', cursive;
+      background: white;
+      cursor: pointer;
+    }
+
+    /* Initial Blur Overlay */
+    .initial-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(10px);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: all 1.5s ease-in-out;
+    }
+
+    .reveal-button {
+      padding: 20px 40px;
+      font-size: 2rem;
+      background: linear-gradient(45deg, #ff4d4d, #ff8080);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      font-family: 'Dancing Script', cursive;
+      box-shadow: 0 0 20px rgba(255, 77, 77, 0.4);
+      transition: all 0.3s ease;
+      animation: pulse 2s infinite;
+    }
+
+    .reveal-button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 30px rgba(255, 77, 77, 0.6);
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .music-hint {
+      position: fixed;
+      bottom: 30px;
+      right: 60px;
+      color: black;
+      font-size: 1.2rem;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+      animation: float 3s infinite ease-in-out;
+      z-index: 1001;
+      text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+      font-weight: bold;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+
+    .fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .fade-in {
+      opacity: 1;
+    }
+
+    /* Mobile Blocker Styles */
+    .mobile-blocker {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 10000;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    .mobile-blocker h2 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      color: #ff4d4d;
+      padding: 0 15px;
+    }
+
+    .mobile-blocker p {
+      font-size: 1.2rem;
+      margin: 10px 0;
+      line-height: 1.5;
+      padding: 0 15px;
+      max-width: 90%;
+    }
+
+    .desktop-hint {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      font-size: 1rem;
+      width: 80%;
+      max-width: 300px;
+    }
+
+    @media screen and (max-width: 480px) {
+      .mobile-blocker h2 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+      }
+
+      .mobile-blocker p {
+        font-size: 1rem;
+        margin: 8px 0;
+      }
+
+      .desktop-hint {
+        font-size: 0.9rem;
+        padding: 12px;
+        margin-top: 15px;
+        width: 85%;
+      }
+    }
+
+    @media screen and (max-height: 600px) {
+      .mobile-blocker {
+        padding: 15px;
+      }
+
+      .mobile-blocker h2 {
+        font-size: 1.3rem;
+        margin-bottom: 10px;
+      }
+
+      .mobile-blocker p {
+        font-size: 0.9rem;
+        margin: 6px 0;
+      }
+
+      .desktop-hint {
+        margin-top: 10px;
+        padding: 10px;
+      }
+    }
+
+    /* Initial Overlay Update */
+    .initial-overlay .desktop-note {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 1rem;
+      margin-top: 20px;
+      font-family: Arial, sans-serif;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Mobile Blocker -->
+  <div class="mobile-blocker" id="mobileBlocker">
+    <h2>⚠️ Desktop Experience Required ⚠️</h2>
+    <p>Please open it on a laptop or desktop computer for the best experience! 💝</p>
+    <div class="desktop-hint">
+      Tip: If you're on mobile, try opening in "Desktop mode" from your browser settings.
+    </div>
+  </div>
+
+  <!-- Initial Overlay -->
+  <div class="initial-overlay" id="initialOverlay">
+    <button class="reveal-button" onclick="revealSurprise()">Reveal the Surprise!</button>
+  </div>
+
+  <!-- Music Hint -->
+  <div class="music-hint" id="musicHint">
+    💝 Try changing the music! 🎵
+  </div>
+
+  <!-- Background Hearts -->
+  <div id="hearts-container"></div>
+
+  <!-- Main Content -->
+  <div class="container">
+    <h1>Hey Baby!Will you be my Valentine?</h1>
+    
+    <div class="button-container">
+      <button class="yes-button" onclick="revealMessage()">Yes</button>
+      <button class="no-button" onmouseover="moveButton(this)" ontouchstart="moveButton(this)">No</button>
+    </div>
+    <img src="solo.jpeg" alt="Solo Photo" class="solo-image">
+    <div id="message" class="hidden">I love you! ❤️</div>
+  </div>
+
+  <!-- Background Music -->
+  <audio id="backgroundMusic" preload="auto" style="display: none;">
+    <source src="All of Me.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <!-- Music Selector -->
+  <div class="music-selector-container">
+    <div class="music-icon" onclick="toggleMusicSelector()">🎵</div>
+    <div class="music-dropdown" id="musicDropdown">
+      <select onchange="changeMusic(this.value)">
+        <option value="All of Me.mp3">All of Me</option>
+        <option value="perfect.mp3">Perfect</option>
+        <option value="New West - Those Eyes.flac">Those Eyes</option>
+        <option value="Justin Bieber - Boyfriend.flac">Boyfriend</option>
+        <option value="cantHelpFalling.mp3">Can't Help Falling in Love</option>
+      </select>
+    </div>
+  </div>
+
+  <script>
+    // Initialize audio context and elements
+    let audioContext, analyser, audioSource;
+    const audio = document.getElementById('backgroundMusic');
+
+    let hasChangedMusic = false; // Add this flag to track music change
+
+    // Function to force start audio with multiple methods
+    function forceAudioStart() {
+      // Set up audio properties
+      audio.volume = 1;
+      audio.loop = true;
+      audio.muted = false;
+      
+      // Try multiple play methods
+      const playAttempt = setInterval(() => {
+        audio.play()
+          .then(() => {
+            clearInterval(playAttempt);
+            if (!audioContext) startAudioVisualization();
+          })
+          .catch(e => console.log("Playback prevented. Click anywhere to start."));
+      }, 200);
+    }
+
+    // Try to start audio as early as possible
+    document.addEventListener('DOMContentLoaded', forceAudioStart);
+    window.addEventListener('load', forceAudioStart);
+    
+    // Start on any user interaction
+    ['click', 'touchstart', 'keydown', 'mousemove', 'scroll'].forEach(event => {
+      document.addEventListener(event, () => {
+        if (audio.paused) {
+          audio.play().then(() => {
+            if (!audioContext) startAudioVisualization();
+          });
+        }
+      }, { once: true });
+    });
+
+    // Resume audio context if suspended
+    setInterval(() => {
+      if (audioContext && audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
+      if (audio.paused) {
+        audio.play();
+      }
+    }, 1000);
+
+    // Function to start audio and visualization
+    function startAudioVisualization() {
+      if (audioContext) return;
+      
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = audioContext.createAnalyser();
+      audioSource = audioContext.createMediaElementSource(audio);
+      
+      audioSource.connect(analyser);
+      analyser.connect(audioContext.destination);
+      
+      analyser.fftSize = 256;
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+      
+      function updateShadow() {
+        analyser.getByteFrequencyData(dataArray);
+        
+        // Split frequency data into ranges
+        const bass = dataArray.slice(0, 8).reduce((a, b) => a + b) / 8;
+        const lowMid = dataArray.slice(8, 16).reduce((a, b) => a + b) / 8;
+        const mid = dataArray.slice(16, 32).reduce((a, b) => a + b) / 16;
+        const highMid = dataArray.slice(32, 48).reduce((a, b) => a + b) / 16;
+        const treble = dataArray.slice(48, 64).reduce((a, b) => a + b) / 16;
+        
+        const bassNorm = Math.pow(bass / 256, 0.8) * 2;
+        const lowMidNorm = lowMid / 256;
+        const midNorm = mid / 256 * 0.8;
+        const highMidNorm = highMid / 256 * 0.7;
+        const trebleNorm = treble / 256 * 0.6;
+        
+        const soloImage = document.querySelector('.solo-image');
+        
+        // Apply transforms only to the solo image
+        soloImage.style.boxShadow = `
+          0 0 ${10 + bassNorm * 60}px rgba(255, 0, 0, ${0.3 + bassNorm * 0.5}),
+          0 0 ${15 + lowMidNorm * 40}px rgba(255, 100, 100, ${0.2 + lowMidNorm * 0.4}),
+          0 0 ${20 + midNorm * 30}px rgba(255, 255, 255, ${0.2 + midNorm * 0.3}),
+          0 0 ${15 + highMidNorm * 25}px rgba(255, 200, 200, ${0.2 + highMidNorm * 0.3}),
+          0 0 ${10 + trebleNorm * 20}px rgba(255, 230, 230, ${0.2 + trebleNorm * 0.2}),
+          0 0 4px rgba(255, 255, 255, 0.5)
+        `;
+        
+        // Limit scale effect to solo image
+        const scaleAmount = 1 + (bassNorm * 0.05) + (lowMidNorm * 0.02);
+        soloImage.style.transform = `scale(${scaleAmount})`;
+        
+        requestAnimationFrame(updateShadow);
+      }
+      
+      updateShadow();
+    }
+
+    // Modify revealMessage to not handle audio
+    function revealMessage() {
+      const message = document.getElementById('message');
+      message.style.display = 'block';
+      createSparkles();
+      showCelebration();
+      
+      for (let i = 0; i < 20; i++) {
+        setTimeout(() => {
+          createHeartBurst();
+        }, i * 50);
+      }
+    }
+
+    // Modified moveButton function
+    function moveButton(button) {
+      const container = document.querySelector('.container');
+      const rect = container.getBoundingClientRect();
+      const buttonRect = button.getBoundingClientRect();
+      
+      // Calculate boundaries to keep button within container
+      const maxX = rect.width - buttonRect.width - 20;  // 20px padding
+      const maxY = rect.height - buttonRect.height - 20;
+      
+      const newX = Math.min(Math.max(0, Math.random() * maxX), maxX);
+      const newY = Math.min(Math.max(0, Math.random() * maxY), maxY);
+      
+      button.style.position = 'absolute';
+      button.style.left = `${newX}px`;
+      button.style.top = `${newY}px`;
+    }
+
+    // Enhanced heart burst effect
+    function createHeartBurst() {
+      const button = document.querySelector('.yes-button');  // Changed to specifically target yes button
+      const rect = button.getBoundingClientRect();
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      heart.innerHTML = '❤️';
+      heart.style.left = `${rect.left + rect.width/2}px`;
+      heart.style.top = `${rect.top + rect.height/2}px`;
+      heart.style.position = 'fixed';
+      heart.style.transform = `translate(-50%, -50%)`;
+      heart.style.animation = 'none';
+      
+      document.body.appendChild(heart);
+      
+      const angle = Math.random() * Math.PI * 2;
+      const velocity = 20 + Math.random() * 20;
+      const startTime = Date.now();
+      
+      function animate() {
+        const elapsed = Date.now() - startTime;
+        const x = velocity * Math.cos(angle) * elapsed / 100;
+        const y = velocity * Math.sin(angle) * elapsed / 100;
+        
+        heart.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) rotate(${elapsed/5}deg)`;
+        heart.style.opacity = Math.max(0, 1 - elapsed/1000);
+        
+        if (elapsed < 1000) requestAnimationFrame(animate);
+        else heart.remove();
+      }
+      
+      requestAnimationFrame(animate);
+    }
+
+    // Enhanced celebration text function
+    function showCelebration() {
+      const celebrations = ['YAYY!!', '❤️', '💖', '💝', '💕'];
+      const button = document.querySelector('.yes-button');  // Changed to specifically target yes button
+      const rect = button.getBoundingClientRect();
+
+      celebrations.forEach((text, index) => {
+        setTimeout(() => {
+          const celebration = document.createElement('div');
+          celebration.textContent = text;
+          celebration.className = 'celebration';
+          celebration.style.left = `${rect.left + Math.random() * rect.width}px`;
+          celebration.style.top = `${rect.top - 50}px`;  // Moved up slightly
+          document.body.appendChild(celebration);
+          
+          setTimeout(() => celebration.remove(), 1000);
+        }, index * 200);
+      });
+    }
+
+    // Enhanced heart creation
+    function createHearts() {
+      const heartsContainer = document.getElementById('hearts-container');
+      for (let i = 0; i < 50; i++) {
+        const heart = document.createElement('div');
+        heart.classList.add('heart');
+        heart.innerHTML = '❤️';
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.top = Math.random() * 100 + 'vh';
+        heart.style.animationDuration = Math.random() * 3 + 2 + 's';
+        heart.style.fontSize = Math.random() * 20 + 20 + 'px';
+        heartsContainer.appendChild(heart);
+      }
+    }
+
+    // New function for sparkle effect
+    function createSparkles() {
+      for (let i = 0; i < 50; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.classList.add('sparkle');
+        sparkle.style.left = Math.random() * 100 + 'vw';
+        sparkle.style.top = Math.random() * 100 + 'vh';
+        sparkle.style.width = Math.random() * 3 + 'px';
+        sparkle.style.height = sparkle.style.width;
+        sparkle.style.opacity = Math.random();
+        document.body.appendChild(sparkle);
+        
+        setTimeout(() => sparkle.remove(), 500);
+      }
+    }
+
+    // Create initial hearts
+    createHearts();
+    
+    // Add sparkles periodically
+    setInterval(createSparkles, 2000);
+
+    // Add these new functions
+    function toggleMusicSelector() {
+      const dropdown = document.getElementById('musicDropdown');
+      dropdown.classList.toggle('show');
+    }
+
+    function changeMusic(songPath) {
+      const audio = document.getElementById('backgroundMusic');
+      const musicHint = document.getElementById('musicHint');
+      const currentTime = audio.currentTime;
+      const wasPlaying = !audio.paused;
+      
+      // Store current source
+      const currentSrc = audio.querySelector('source').src;
+      
+      // Update source only if it's different
+      if (!currentSrc.endsWith(songPath)) {
+        audio.querySelector('source').src = songPath;
+        audio.load();
+        
+        // Resume playback if it was playing
+        if (wasPlaying) {
+          audio.play().then(() => {
+            if (!audioContext) {
+              startAudioVisualization();
+            }
+          }).catch(console.error);
+        }
+
+        // Hide music hint after first music change
+        if (!hasChangedMusic) {
+          hasChangedMusic = true;
+          musicHint.classList.remove('fade-in');
+        }
+      }
+      
+      // Hide dropdown after selection
+      document.getElementById('musicDropdown').classList.remove('show');
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+      const container = document.querySelector('.music-selector-container');
+      const dropdown = document.getElementById('musicDropdown');
+      
+      if (!container.contains(event.target) && dropdown.classList.contains('show')) {
+        dropdown.classList.remove('show');
+      }
+    });
+
+    function revealSurprise() {
+      if (isMobile()) {
+        return; // Don't reveal if on mobile
+      }
+      const overlay = document.getElementById('initialOverlay');
+      const musicHint = document.getElementById('musicHint');
+      const audio = document.getElementById('backgroundMusic');
+
+      // Fade out overlay
+      overlay.style.opacity = '0';
+      setTimeout(() => {
+        overlay.style.display = 'none';
+      }, 1500);
+
+      // Start music and visualization
+      audio.play().then(() => {
+        startAudioVisualization();
+        
+        // Show music hint after a delay
+        setTimeout(() => {
+          musicHint.classList.add('fade-in');
+        }, 3000);
+      });
+    }
+
+    // Prevent any background music from starting automatically
+    window.addEventListener('load', () => {
+      const audio = document.getElementById('backgroundMusic');
+      audio.pause();
+    });
+
+    // Mobile Detection and Blocking
+    function isMobile() {
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
+        && !window.matchMedia('(display-mode: standalone)').matches;
+    }
+
+    function checkDevice() {
+      const mobileBlocker = document.getElementById('mobileBlocker');
+      const initialOverlay = document.getElementById('initialOverlay');
+      
+      if (isMobile()) {
+        mobileBlocker.style.display = 'flex';
+        initialOverlay.style.display = 'none';
+        // Stop any running animations or music
+        if (window.audioContext) {
+          audioContext.suspend();
+        }
+        const audio = document.getElementById('backgroundMusic');
+        if (audio) {
+          audio.pause();
+        }
+      } else {
+        mobileBlocker.style.display = 'none';
+        initialOverlay.style.display = 'flex';
+      }
+    }
+
+    // Check on load and resize
+    window.addEventListener('load', checkDevice);
+    window.addEventListener('resize', checkDevice);
+  </script>
+</body>
+</html>
